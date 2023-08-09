@@ -63,6 +63,13 @@ export const bookingFeature = createFeature({
       };
     }),
 
+    on(bookingActions.flightUpdate, (state, action) => {
+      return {
+        ...state,
+        flights: state.flights.map(f => f.id === action.flight.id ? action.flight : f)
+      };
+    }),
+
     on(bookingActions.ticketIdAdd, (state, action) => ({
       ...state,
       ticketIds: [
@@ -155,6 +162,13 @@ export function injectBookingFeature() {
     ),
     save: (flight: Flight) => store.dispatch(
       bookingActions.flightSave({ flight })
-    )
+    ),
+    delay(){
+      const flight = this.flights()[0];
+      const date = new Date(flight.date);
+      const newDate = new Date(date.getTime() + 1000 * 60 * 15);
+      const newFlight = { ...flight, date: newDate.toISOString() };
+      store.dispatch(bookingActions.flightUpdate({flight: newFlight }));
+    }
   };
 }
