@@ -1,12 +1,27 @@
 import { CdVisualizerDirective, injectCdCounter, SignalComponentFeature } from '@angular-architects/signals-experimental';
 import { DatePipe, JsonPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { Component, computed, effect, signal } from '@angular/core';
+import { Component, computed, effect, Pipe, PipeTransform, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { injectBookingFeature } from '../../../+state/booking.state';
 import { CardComponent } from '../../ui/card.component';
 import { CounterComponent } from '../../ui/counter.component';
-import { Flight } from './../../logic/model/flight';
+import { Flight, initialFlight } from './../../logic/model/flight';
+
+@Pipe({
+  name: 'flightToSignal',
+  standalone: true
+})
+export class FlightToSignalPipe implements PipeTransform {
+  flightSignal = signal(initialFlight, {
+    equal: (a, b) => a === b
+  });
+
+  transform(flight: Flight): WritableSignal<Flight> {
+    queueMicrotask(() => this.flightSignal.set(flight));
+    return this.flightSignal;
+  }
+}
 
 
 @Component({
@@ -17,6 +32,7 @@ import { Flight } from './../../logic/model/flight';
     RouterLink,
     FormsModule,
     CardComponent,
+    FlightToSignalPipe,
     CounterComponent,
     CdVisualizerDirective
   ],

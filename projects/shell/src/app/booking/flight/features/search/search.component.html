@@ -63,8 +63,10 @@
         viewDetails: 'Flight Result Items'
       }">
 
-    <app-flight-card [item]="flight" [selected]="basket()[flight.id]"
-      (selectedChange)="updateBasket(flight.id, $event)" />
+      <app-flight-card
+        [item]="flight | flightToSignal"
+        [selected]="basket()[flight.id]"
+        (selectedChange)="updateBasket(flight.id, $event)" />
 
   </div>
 </div>
