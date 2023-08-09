@@ -1,6 +1,6 @@
 import { CdVisualizerDirective, injectCdCounter, SignalComponentFeature } from '@angular-architects/signals-experimental';
 import { DatePipe, NgStyle } from '@angular/common';
-import { Component, EventEmitter, Input, Output, WritableSignal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, Signal, WritableSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Flight } from '../logic/model/flight';
 
@@ -18,7 +18,7 @@ import { Flight } from '../logic/model/flight';
   template: `
     <div
       class="card"
-      [ngStyle]="{ 'background-color': selected ? 'rgb(204, 197, 185)' : 'white' }"
+      [ngStyle]="{ 'background-color': selected() ? 'rgb(204, 197, 185)' : 'white' }"
     >
       <div class="card-header">
         <h2 class="card-title">{{ item().from }} - {{ item().to }}</h2>
@@ -32,7 +32,7 @@ import { Flight } from '../logic/model/flight';
             (click)="toggleSelection()"
             class="btn btn-info btn-sm"
             style="min-width: 85px; margin-right: 5px">
-            {{ selected ? "Remove" : "Select" }}
+            {{ selected() ? "Remove" : "Select" }}
           </button>
           <a
             [routerLink]="['../edit', item().id]"
@@ -55,18 +55,13 @@ export class CardComponent {
   });
 
   @Input({ required: true }) item!: WritableSignal<Flight>;
-  private _selected = false;
-  get selected() {
-    return this._selected;
-  }
-  @Input() set selected(s: boolean) {
-    this._selected = s;
-  }
+  @Input({ required: true }) selected = signal(false);
 
-  @Output() selectedChange = new EventEmitter<boolean>();
+  constructor() {
+
+  }
 
   toggleSelection(): void {
-    this.selected = !this.selected;
-    this.selectedChange.emit(this.selected);
+    this.selected.update(sel => !sel);
   }
 }

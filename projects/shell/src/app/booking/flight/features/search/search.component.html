@@ -65,8 +65,7 @@
 
       <app-flight-card
         [item]="flight | flightToSignal"
-        [selected]="basket()[flight.id]"
-        (selectedChange)="updateBasket(flight.id, $event)" />
+        [selected]="basket | basketToSeleectedSignal:flight.id" />
 
   </div>
 </div>
